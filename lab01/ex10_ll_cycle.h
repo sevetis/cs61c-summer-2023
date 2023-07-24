@@ -1,6 +1,9 @@
 #ifndef LL_CYCLE_H
 #define LL_CYCLE_H
 
+#include <assert.h>
+#include <stdio.h>
+
 typedef struct node {
     int value;
     struct node *next;

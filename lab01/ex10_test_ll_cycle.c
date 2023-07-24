@@ -1,5 +1,3 @@
-#include <assert.h>
-#include <stdio.h>
 #include "ex10_ll_cycle.h"
 
 int main(void) {
