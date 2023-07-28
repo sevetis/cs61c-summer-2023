@@ -321,38 +321,33 @@ void update_state(game_state_t* state, int (*add_food)(game_state_t* state)) {
 /* Task 5 */
 game_state_t* load_board(FILE* fp) {
   // TODO: Implement this function.
-  game_state_t* res = malloc(sizeof(game_state_t));
-  char** board = (char**)malloc(sizeof(char*));
+  game_state_t* state = malloc(sizeof(game_state_t));
+  state -> board = (char**)malloc(sizeof(char*));
   unsigned int num_rows = 1, num_cols = 1;
   
-  char c, temp[50];
+  char c, temp[1000000];
   while((c = (char)fgetc(fp)) != EOF) {
     temp[num_cols - 1] = c; 
     num_cols++;
     
     if (c == '\n') {
       temp[num_cols - 1] = '\0';
-
-      board[num_rows - 1] = (char*)malloc(num_cols);
-      strcpy(board[num_rows - 1], temp);
+      state -> board[num_rows - 1] = (char*)malloc(num_cols * sizeof(char));
+      strcpy(state -> board[num_rows - 1], temp);
       
       num_cols = 1;
       num_rows++;
-      
-      board = (char**)realloc(board, num_rows * sizeof(char*));
+      state -> board = (char**)realloc(state -> board, num_rows * sizeof(char*));
     }
   }
-  fclose(fp);
 
   num_rows--;
-  board = (char**)realloc(board, num_rows * sizeof(char*));
+  state -> board = (char**)realloc(state -> board, num_rows * sizeof(char*));
+  state -> num_rows = num_rows;
+  state -> num_snakes = 0;
+  state -> snakes = NULL;
   
-  res -> board = board;
-  res -> num_rows = num_rows;
-  res -> num_snakes = 0;
-  res -> snakes = NULL;
-  
-  return res;
+  return state;
 }
 
 /*

@@ -87,22 +87,14 @@ int main(int argc, char* argv[]) {
     // initialize_snakes(state);
   } else {
     // TODO: Create default state
-
     state = create_default_state();
 
   }
 
   // TODO: Update state. Use the deterministic_food function
   // (already implemented in snake_utils.h) to add food.
-      for (int i = 0; i < state -> num_rows; i++) {
-      printf("%s", state -> board[i]);
-    }
-    printf("\n");
   update_state(state, deterministic_food);
-      for (int i = 0; i < state -> num_rows; i++) {
-      printf("%s", state -> board[i]);
-    }
-
+  
   // Write updated board to file or stdout
   if (out_filename != NULL) {
     // TODO: Save the board to out_filename
