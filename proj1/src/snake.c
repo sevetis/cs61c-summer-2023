@@ -53,6 +53,7 @@ int main(int argc, char* argv[]) {
       return -1;
     } 
     state = load_board(fp);
+    fclose(fp);
     initialize_snakes(state);
   } else if (io_stdin) {
     // TODO: Load the board from stdin
