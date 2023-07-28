@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>  
 
 #include "snake_utils.h"
 #include "state.h"
@@ -46,24 +47,75 @@ int main(int argc, char* argv[]) {
     // TODO: Load the board from in_filename
     // TODO: If the file doesn't exist, return -1
     // TODO: Then call initialize_snakes on the state you made
+    FILE* fp;
+    fp = fopen(in_filename, "r");
+    if (!fp) {
+      return -1;
+    } 
+    state = load_board(fp);
+    initialize_snakes(state);
   } else if (io_stdin) {
     // TODO: Load the board from stdin
     // TODO: Then call initialize_snakes on the state you made
+    // char** board = (char**)malloc(sizeof(char*));
+
+    // char c, temp[50];
+    // unsigned int num_rows = 1, num_cols = 1;
+
+    // while ((c = getchar()) != EOF) {
+    //   temp[num_cols - 1] = c;
+    //   num_cols++;
+      
+    //   if (c == '\n') {
+    //     temp[num_cols - 1] = '\0';
+    //     board[num_rows - 1] = (char*)malloc(num_cols * sizeof(char));
+    //     strcpy(board[num_rows - 1], temp);
+
+    //     num_rows++;
+    //     board = realloc(board, num_rows * sizeof(char*));
+    //   }
+    // }
+    // num_rows--;
+    // board = realloc(board, num_rows * sizeof(char*));
+
+    // state -> board = board;
+    // state -> num_rows = num_rows;
+    // state -> num_snakes = 0;
+    // state -> snakes = NULL;
+
+    // initialize_snakes(state);
   } else {
     // TODO: Create default state
+
+    state = create_default_state();
+
   }
 
   // TODO: Update state. Use the deterministic_food function
   // (already implemented in snake_utils.h) to add food.
+      for (int i = 0; i < state -> num_rows; i++) {
+      printf("%s", state -> board[i]);
+    }
+    printf("\n");
+  update_state(state, deterministic_food);
+      for (int i = 0; i < state -> num_rows; i++) {
+      printf("%s", state -> board[i]);
+    }
 
   // Write updated board to file or stdout
   if (out_filename != NULL) {
     // TODO: Save the board to out_filename
+    save_board(state, out_filename);
   } else {
     // TODO: Print the board to stdout
+    int i;
+    for (i = 0; i < state -> num_rows; i++) {
+      printf("%s", state -> board[i]);
+    }
   }
 
   // TODO: Free the state
+  free_state(state);
 
   return 0;
 }
