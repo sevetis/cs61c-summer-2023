@@ -3,3 +3,18 @@
 # Lines starting with # are comments, feel free to add any to document your commands
 
 # Please add your commands below this line
+start
+n
+n
+n
+s
+s
+p password
+fin
+s
+s
+s
+s
+p meets_lem_req
+p length
+q
