@@ -58,33 +58,10 @@ int main(int argc, char* argv[]) {
   } else if (io_stdin) {
     // TODO: Load the board from stdin
     // TODO: Then call initialize_snakes on the state you made
-    // char** board = (char**)malloc(sizeof(char*));
-
-    // char c, temp[50];
-    // unsigned int num_rows = 1, num_cols = 1;
-
-    // while ((c = getchar()) != EOF) {
-    //   temp[num_cols - 1] = c;
-    //   num_cols++;
-      
-    //   if (c == '\n') {
-    //     temp[num_cols - 1] = '\0';
-    //     board[num_rows - 1] = (char*)malloc(num_cols * sizeof(char));
-    //     strcpy(board[num_rows - 1], temp);
-
-    //     num_rows++;
-    //     board = realloc(board, num_rows * sizeof(char*));
-    //   }
-    // }
-    // num_rows--;
-    // board = realloc(board, num_rows * sizeof(char*));
-
-    // state -> board = board;
-    // state -> num_rows = num_rows;
-    // state -> num_snakes = 0;
-    // state -> snakes = NULL;
-
-    // initialize_snakes(state);
+    FILE* fp = stdin;
+    state = load_board(fp);
+    fclose(fp);
+    initialize_snakes(state);
   } else {
     // TODO: Create default state
     state = create_default_state();
