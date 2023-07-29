@@ -60,12 +60,10 @@ int main(int argc, char* argv[]) {
     // TODO: Then call initialize_snakes on the state you made
     FILE* fp = stdin;
     state = load_board(fp);
-    fclose(fp);
     initialize_snakes(state);
   } else {
     // TODO: Create default state
     state = create_default_state();
-
   }
 
   // TODO: Update state. Use the deterministic_food function
