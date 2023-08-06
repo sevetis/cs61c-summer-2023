@@ -10,9 +10,17 @@
 # =================================================================
 abs:
     # Prologue
+    
+    lw t0 0(a0)
+    blt zero t0 done
 
-    # PASTE HERE
+    #Negate a0
+    sub t0 x0 t0
 
+    #Store number back to memory
+    sw t0 0(a0)
+
+done:
     # Epilogue
 
     jr ra
