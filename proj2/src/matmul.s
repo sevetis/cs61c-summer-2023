@@ -85,9 +85,14 @@ inner_loop_start:
 
     addi a3 a3 4    # next column
     j inner_loop_start
+    
 inner_loop_end:
     lw a3 0(sp)
     addi sp sp 4    # restore a3
+
+    # move to next row
+    slli t2 a4 2
+    add a0 a0 t2
     j outer_loop_start
 
 outer_loop_end:
