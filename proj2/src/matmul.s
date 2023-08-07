@@ -43,6 +43,10 @@ outer_loop_start:
     addi t0 t0 1    # i++
 
     mv t1 x0 # j = 0    
+    
+    addi sp sp -4   # store a3
+    sw a3 0(sp)
+
 inner_loop_start:
     bge t1 a5 inner_loop_end    # j < m1's cols
     addi t1 t1 1    # j++
@@ -59,15 +63,16 @@ inner_loop_start:
     sw a6 28(sp)
 
     #call dot product
-    mv a1 a3
-    li a3 1
+    mv a1 a3    # load arr1 (arr0 already loaded in a0)
+    mv a2 a4    # load using elements' number (a2 = a4, but a2 not be saved in sp)
+    li a3 1     # stride of arr0 is 1 (stride of arr1 is a4 -- the width of m0 (a2) = the height of m1 (a4))
     jal dot
 
-    sw a0 0(a6)
-    addi a6 a6 4
+    lw a6 28(sp)
+    sw a0 0(a6) # save result
+    addi a6 a6 4 # next element
 
     #Epilogue
-    lw a6 28(sp)
     lw a5 24(sp)
     lw a4 20(sp)
     lw a3 16(sp)
@@ -77,10 +82,12 @@ inner_loop_start:
     lw t0 0(sp)
     addi sp sp 32
 
+    addi a3 a3 4    # next column
+    j inner_loop_start
 inner_loop_end:
-
-
-
+    lw a3 0(sp)
+    addi sp sp 4    # restore a3
+    j outer_loop_start
 
 outer_loop_end:
 
@@ -88,7 +95,7 @@ outer_loop_end:
     # Epilogue
     lw a6 4(sp)
     lw ra 0(sp)
-    addi sp sp 4
+    addi sp sp 8
 
     jr ra
 
