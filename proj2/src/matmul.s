@@ -65,7 +65,8 @@ inner_loop_start:
     #call dot product
     mv a1 a3    # load arr1 (arr0 already loaded in a0)
     mv a2 a4    # load using elements' number (a2 = a4, but a2 not be saved in sp)
-    li a3 1     # stride of arr0 is 1 (stride of arr1 is a4 -- the width of m0 (a2) = the height of m1 (a4))
+    li a3 1     # stride of arr0 should be 1 
+    mv a4 a5    # stride of arr1 should be the width of m1 (a5)
     jal dot
 
     lw a6 28(sp)
