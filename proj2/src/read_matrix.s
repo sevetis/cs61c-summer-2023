@@ -98,42 +98,39 @@ read_matrix:
 
     mul t0 t1 t2 # number of element
     sw t0 12(sp)
+
     mv a0 t0
     jal malloc
 
     beq a0 x0 malloc_failed
     mv t0 a0  # allocated space
 
-    lw a0 0(sp)
-    addi sp sp 12
 
     # read file
-    lw a2 0(sp) 
+    lw a0 0(sp)
+    lw a2 12(sp) 
     mv a1 t0 # load pointer
     mv s0 t0
 
     jal fread
 
-    lw a2 0(sp)
-    addi sp sp 4        
+    lw a2 12(sp)
     bne a0 a2 fread_failed
 
-    mv a0 s0
+    lw a0 0(sp)
+    addi sp sp 16
 
 # CLOSE FILE
-    addi sp sp -4
-    sw a0 0(sp)
 
     jal fclose
     bne a0 x0 fclose_failed
 
-    lw a0 0(sp)
-    addi sp sp 4
+    mv a0 s0 # return value
 
     # Epilogue
     lw s0 4(sp)
     lw ra 0(sp) 
-    addi sp sp 4
+    addi sp sp 8
     jr ra
 
 
