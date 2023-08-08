@@ -27,65 +27,113 @@
 read_matrix:
 
     # Prologue
-    addi sp sp -12
+    addi sp sp -8
     sw ra 0(sp)
+    sw s0 4(sp)
+
+# OPEN THE FILE
+    addi sp sp -8
+    sw a1 0(sp)
+    sw a2 4(sp)
+
+    li a1 0 # permission
+    jal fopen
+    
+    addi t0 x0 -1   # exception
+    beq a0 t0 fopen_failed
+
+    lw a2 4(sp)
+    lw a1 0(sp)
+    addi sp sp 8
+
+# READ ROW AND COL
+    # allocate space
+    addi sp sp -12
+    sw a0 0(sp)
     sw a1 4(sp)
     sw a2 8(sp)
 
-    # fopen
-    li a1 1
-    jal fopen
-
-    li t0 -1
-    beq t0 a0 fopen_failed
-
-    addi sp sp -4
-    sw a0 0(sp)
-
-    # read row and col
-    li a2 4 # read 1 int (row)
-    lw a1 8(sp)
-    jal fread
-    li a2 4
-    bne a0 a2 fread_failed
-
-    lw a1 12(sp)
-    lw a0 0(sp)
-    jal fread
-    li a2 4
-    bne a0 a2 fread_failed
-
-    # alloc space for elements
-    lw a1 8(sp)
-    lw a2 12(sp)
-    lw t0 0(a1)
-    lw t1 0(a2)
-    mul a0 t0 t1
-    addi sp sp -4
-    sw a0 0(sp)
+    li a0 8 # 2 * sizeof(int)
     jal malloc
-    beq a0 x0 malloc_failed
-    
-    # read elements
-    lw a2 0(sp)
-    mv a1 a0
-    lw a0 4(sp)
-    jal fread
-    lw a2 0(sp)
-    bne a0 a2 fread_failed
-    sw a1 0(sp)
 
-    # fclose
-    lw a0 4(sp)
+    beq a0 x0 malloc_failed # exception
+
+    mv s0 a0 # store result
+
+    lw a2 8(sp)
+    lw a1 4(sp)
+    lw a0 0(sp)
+    addi sp sp 12
+
+    # read file
+    addi sp sp -12
+    sw a0 0(sp)
+    sw a1 4(sp)
+    sw a2 8(sp)
+
+    mv a1 s0 # pointer to be allocated
+    li a2 8 # 2 int
+    jal fread
+
+    li a2 8 # exception
+    bne a0 a2 fread_failed
+    
+    lw a2 8(sp)
+    lw a1 4(sp)
+    lw a0 0(sp)
+    addi sp sp 12
+
+    # set row and col
+    lw t1 0(s0) # row
+    lw t2 4(s0) # col
+    sw t1 0(a1)
+    sw t2 0(a2)
+
+# READ MATRIX    
+    # allocate space 
+    addi sp sp -16
+    sw a0 0(sp)
+    sw a1 4(sp)
+    sw a2 8(sp)
+
+    mul t0 t1 t2 # number of element
+    sw t0 12(sp)
+    mv a0 t0
+    jal malloc
+
+    beq a0 x0 malloc_failed
+    mv t0 a0  # allocated space
+
+    lw a0 0(sp)
+    addi sp sp 12
+
+    # read file
+    lw a2 0(sp) 
+    mv a1 t0 # load pointer
+    mv s0 t0
+
+    jal fread
+
+    lw a2 0(sp)
+    addi sp sp 4        
+    bne a0 a2 fread_failed
+
+    mv a0 s0
+
+# CLOSE FILE
+    addi sp sp -4
+    sw a0 0(sp)
+
     jal fclose
     bne a0 x0 fclose_failed
 
+    lw a0 0(sp)
+    addi sp sp 4
 
     # Epilogue
-    lw a0 0(sp)
-    lw ra 8(sp)
-    addi sp sp 20
-    
+    lw s0 4(sp)
+    lw ra 0(sp) 
+    addi sp sp 4
     jr ra
 
 
