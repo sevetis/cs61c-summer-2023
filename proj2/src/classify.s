@@ -25,11 +25,12 @@
 #   main.s <M0_PATH> <M1_PATH> <INPUT_PATH> <OUTPUT_PATH>
 classify:
     # PROLOGUE
-    addi sp sp -16
+    addi sp sp -20
     sw ra 0(sp)
     sw s0 4(sp)
     sw s1 8(sp)
     sw s2 12(sp)
+    sw s3 16(sp)
 
     # check argc
     li t0 5 # argc = 5
@@ -40,50 +41,41 @@ classify:
     sw a1 0(sp)
     sw a2 4(sp)
 
-# READ m0
-     # allocate space for pointer arguments
-    li a0 8 # 2 int
+# READ 
+    # allocate space for pointer arguments
+    li a0 24 # 3 matrices, 6 arguments , 6 * sizeof(int) = 24
     jal malloc
 
     beq a0 x0 malloc_failed
-     # read 
-    mv a1 a0 # a1 = a0
-    addi a2 a1 4 # a2 = a0 + 4
+
+    mv s0 a0 # store result 
+
+    # m0
+    add a1 s0 x0 # row pointer
+    addi a2 s0 4 # col pointer
     lw t0 0(sp) # t0 = argv
     lw a0 4(t0) # a0 = argv[1]
 
     jal read_matrix
-    mv s0 a0 # s0 = m0
+    mv s1 a0 # s1 = m0
 
-# READ m1
-     # allocate space 
-    li a0 8
-    jal malloc
-
-    beq a0 x0 malloc_failed
-     #read 
-    mv a1 a0
-    addi a2 a1 4
+    # m1
+    addi a1 s0 8
+    addi a2 s0 12
     lw t0 0(sp)
     lw a0 8(t0)
 
     jal read_matrix
-    mv s1 a0 # s1 = m1
+    mv s2 a0 # s2 = m1
 
-# READ INPUT
-     # allocate 
-    li a0 8
-    jal malloc
-
-    beq a0 x0 malloc_failed
-     # read 
-    mv a1 a0
-    addi a2 a1 4
+    # input 
+    addi a1 s0 16
+    addi a2 s0 20
     lw t0 0(sp)
     lw a0 12(t0)
 
     jal read_matrix
-    mv s2 a0 # s2 = input
+    mv s3 a0 # s3 = input
 
 # MATMUL(m0, input)
 
@@ -91,7 +83,9 @@ classify:
 
 
 
+
     # EPILOGUE
+    lw s3 16(sp)
     lw s2 12(sp)
     lw s1 8(sp)
     lw s0 4(sp)
