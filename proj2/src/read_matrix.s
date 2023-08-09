@@ -85,7 +85,7 @@ read_matrix:
 
     # set row and col
     lw t1 0(s0) # row
-    lw t2 4(s0) # col
+    lw t2 4(s0) # cols
     sw t1 0(a1)
     sw t2 0(a2)
 
@@ -97,6 +97,7 @@ read_matrix:
     sw a2 8(sp)
 
     mul t0 t1 t2 # number of element
+    slli t0 t0 2 # n * sizeof(int)
     sw t0 12(sp)
 
     mv a0 t0
@@ -104,7 +105,6 @@ read_matrix:
 
     beq a0 x0 malloc_failed
     mv t0 a0  # allocated space
-
 
     # read file
     lw a0 0(sp)
@@ -131,6 +131,7 @@ read_matrix:
     lw s0 4(sp)
     lw ra 0(sp) 
     addi sp sp 8
+
     jr ra
 
 
