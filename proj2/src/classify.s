@@ -45,11 +45,12 @@ classify:
     # allocate space for pointer arguments
     li a0 24 # 3 matrices, 6 arguments , 6 * sizeof(int) = 24
     jal malloc
-
     beq a0 x0 malloc_failed
 
     mv s0 a0 # store result 
-
+    # s0: 0   4   8   12   16   20  
+    #    r0  c0  r1   c1   ri   ci 
+         
     # m0
     add a1 s0 x0 # row pointer
     addi a2 s0 4 # col pointer
@@ -77,13 +78,95 @@ classify:
     jal read_matrix
     mv s3 a0 # s3 = input
 
-# MATMUL(m0, input)
+# H = MATMUL(m0, input) 
+    # allocate space
+    lw t0 0(s0)     # t0 = m0's height
+    lw t1 20(s0)    # t1 = input's width
+    mul a0 t0 t1    # numbers of elements
+    slli a0 a0 2    # total size
 
+    jal malloc
+    beq a0 x0 malloc_failed
 
+    # load arguments
+    mv a6 a0    # a6 = result's pointer
+    mv a0 s1    # a0 = m0 
+    lw a1 0(s0) # a1 = m0's row
+    lw a2 4(s0) # a2 = m0's col
+    mv a3 s3    # a3 = input
+    lw a4 16(s0)# a4 = input's row
+    lw a5 20(s0)# a5 = input's col
 
+    mv s1 a6 # store result's address s1 = h = m0 x input
 
+    jal matmul
 
+# H = RELU(H)
+    mv a0 s1 
+    
+    lw t0 0(s0)
+    lw t1 20(s0)
+    mul a1 t0 t1
 
+    jal relu
+
+# O = MATMUL(m1, h)
+    # allocate space
+    lw t0 8(s0) # t0 = m1's height
+    lw t1 20(s0) # t1 = h's width = input's width
+    mul a0 t0 t1 
+    slli a0 a0 2
+
+    jal malloc
+    beq a0 x0 malloc_failed
+
+    # load arguments
+    mv a6 a0
+    mv a0 s2
+    lw a1 8(s0)
+    lw a2 12(s0)
+    mv a3 s1
+    lw a4 0(s0)
+    lw a5 20(s0)
+
+    mv s1 a6    # s1 = o
+
+    jal matmul
+
+# WRITE OUTPUT FILE
+    lw t0 0(sp)  # t0 = argv
+    lw a0 16(t0) # a0 = argv[4]
+
+    mv a1 s1    
+    lw a2 8(s0)
+    lw a3 20(s0)
+
+    jal write_matrix
+
+# ARGMAX
+    mv a0 s1
+    
+    lw t0 8(s0)
+    lw t1 20(s0)
+    mul a1 t0 t1
+
+    jal argmax
+
+    sw a0 0(sp) # save final result in stack, overwrite useless argv
+
+# PRINT
+    lw a2 4(sp) # restore print argument
+    li t0 1
+    beq a2 t0 FREE
+    print_int
+    li a0 '\n'
+    print_char
+
+FREE:
+    mv a0 s0 
+    jal free
+
+    lw a0 0(sp)
     # EPILOGUE
     lw s3 16(sp)
     lw s2 12(sp)
