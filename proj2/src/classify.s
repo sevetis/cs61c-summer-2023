@@ -158,9 +158,9 @@ classify:
     lw a2 4(sp) # restore print argument
     li t0 1
     beq a2 t0 FREE
-    print_int
+    jal print_int
     li a0 '\n'
-    print_char
+    jal print_char
 
 FREE:
     mv a0 s0 
