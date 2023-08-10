@@ -25,18 +25,20 @@
 #   main.s <M0_PATH> <M1_PATH> <INPUT_PATH> <OUTPUT_PATH>
 classify:
     # PROLOGUE
-    addi sp sp -20
+    addi sp sp -28
     sw ra 0(sp)
     sw s0 4(sp)
     sw s1 8(sp)
     sw s2 12(sp)
     sw s3 16(sp)
+    sw s4 20(sp)
+    sw s5 24(sp)
 
     # check argc
-    li t0 5 # argc = 5
+    li t0 5 # argc == 5
     bne a0 t0 incorrect_argc
 
-    # save arguments  
+    # store arguments  
     addi sp sp -12
     sw a1 0(sp)
     sw a2 4(sp)
@@ -58,6 +60,7 @@ classify:
     lw a0 4(t0) # a0 = argv[1]
 
     jal read_matrix
+    mv s1 a0 # s1 = m0
     mv s1 a0 # s1 = m0
 
     # m1
@@ -97,12 +100,12 @@ classify:
     lw a4 16(s0)# a4 = input's row
     lw a5 20(s0)# a5 = input's col
 
-    mv s1 a6 # store result's address s1 = h = m0 x input
+    mv s4 a6 # s4 = h = m0 x input
 
     jal matmul
 
 # H = RELU(H)
-    mv a0 s1 
+    mv a0 s4
     
     lw t0 0(s0)
     lw t1 20(s0)
@@ -125,11 +128,11 @@ classify:
     mv a0 s2
     lw a1 8(s0)
     lw a2 12(s0)
-    mv a3 s1
+    mv a3 s4
     lw a4 0(s0)
     lw a5 20(s0)
 
-    mv s1 a6    # s1 = o
+    mv s5 a6    # s5 = o
 
     jal matmul
 
@@ -137,14 +140,14 @@ classify:
     lw t0 0(sp)  # t0 = argv
     lw a0 16(t0) # a0 = argv[4]
 
-    mv a1 s1    
+    mv a1 s5
     lw a2 8(s0)
     lw a3 20(s0)
 
     jal write_matrix
 
 # ARGMAX
-    mv a0 s1
+    mv a0 s5
     
     lw t0 8(s0)
     lw t1 20(s0)
@@ -163,17 +166,31 @@ classify:
     jal print_char
 
 FREE:
-    mv a0 s0 
+    mv a0 s0    # free s0
+    jal free
+    mv a0 s1    # free s1
+    jal free
+    mv a0 s2    # free s2
+    jal free
+    mv a0 s3    # free s3
+    jal free
+    mv a0 s4    # free s4
+    jal free
+    mv a0 s5    # free s5
     jal free
 
-    lw a0 0(sp)
+    # restore final result
+    lw a0 0(sp) 
     # EPILOGUE
+    addi sp sp 12
+    lw s5 24(sp)
+    lw s4 20(sp)
     lw s3 16(sp)
     lw s2 12(sp)
     lw s1 8(sp)
     lw s0 4(sp)
     lw ra 0(sp)
-    addi sp sp 12
+    addi sp sp 28
 
     jr ra
 
