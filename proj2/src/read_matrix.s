@@ -47,47 +47,28 @@ read_matrix:
     addi sp sp 8
 
 # READ ROW AND COL
-    # allocate space
     addi sp sp -12
     sw a0 0(sp)
     sw a1 4(sp)
     sw a2 8(sp)
 
-    li a0 8 # 2 * sizeof(int)
-    jal malloc
-
-    beq a0 x0 malloc_failed # exception
-
-    mv s0 a0 # store result
-
-    lw a2 8(sp)
-    lw a1 4(sp)
-    lw a0 0(sp)
-    addi sp sp 12
-
-    # read file
-    addi sp sp -12
-    sw a0 0(sp)
-    sw a1 4(sp)
-    sw a2 8(sp)
-
-    mv a1 s0 # pointer to be allocated
-    li a2 8 # 2 int
+    li a2 4 # read row
     jal fread
 
-    li a2 8 # exception
+    li a2 4 # exception
     bne a0 a2 fread_failed
     
+    lw a0 0(sp)
+    lw a1 8(sp)
+    jal fread # read col
+
+    li a2 4 # exception
+    bne a0 a2 fread_failed
+
     lw a2 8(sp)
     lw a1 4(sp)
     lw a0 0(sp)
     addi sp sp 12
-
-    # set row and col
-    lw t1 0(s0) # row
-    lw t2 4(s0) # cols
-    sw t1 0(a1)
-    sw t2 0(a2)
 
 # READ MATRIX    
     # allocate space 
@@ -96,6 +77,8 @@ read_matrix:
     sw a1 4(sp)
     sw a2 8(sp)
 
+    lw t1 0(a1)
+    lw t2 0(a2)
     mul t0 t1 t2 # number of element
     slli t0 t0 2 # n * sizeof(int)
     sw t0 12(sp)
