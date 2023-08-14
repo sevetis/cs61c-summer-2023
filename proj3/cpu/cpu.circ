@@ -39,13 +39,13 @@
       <a name="font" val="SansSerif plain 12"/>
     </tool>
   </lib>
-  <lib desc="file#alu.circ" name="6"/>
-  <lib desc="file#regfile.circ" name="7"/>
-  <lib desc="file#imm-gen.circ" name="8"/>
+  <lib desc="file#imm-gen.circ" name="6"/>
+  <lib desc="file#branch-comp.circ" name="7"/>
+  <lib desc="file#control-logic.circ" name="8"/>
   <lib desc="file#partial-store.circ" name="9"/>
   <lib desc="file#partial-load.circ" name="10"/>
-  <lib desc="file#branch-comp.circ" name="11"/>
-  <lib desc="file#control-logic.circ" name="12"/>
+  <lib desc="file#alu.circ" name="11"/>
+  <lib desc="file#regfile.circ" name="12"/>
   <main name="cpu"/>
   <options>
     <a name="gateUndefined" val="ignore"/>
@@ -162,18 +162,11 @@
       <a name="label" val="t2"/>
       <a name="width" val="32"/>
     </comp>
-    <comp lib="0" loc="(1260,470)" name="Constant">
-      <a name="facing" val="north"/>
-      <a name="value" val="0x0"/>
-    </comp>
-    <comp lib="0" loc="(1260,500)" name="Tunnel">
+    <comp lib="0" loc="(1260,480)" name="Tunnel">
       <a name="facing" val="north"/>
       <a name="label" val="ASel"/>
     </comp>
-    <comp lib="0" loc="(1260,600)" name="Constant">
-      <a name="facing" val="north"/>
-    </comp>
-    <comp lib="0" loc="(1260,630)" name="Tunnel">
+    <comp lib="0" loc="(1260,600)" name="Tunnel">
       <a name="facing" val="north"/>
       <a name="label" val="BSel"/>
     </comp>
@@ -202,6 +195,9 @@
       <a name="facing" val="north"/>
       <a name="label" val="s0"/>
       <a name="width" val="32"/>
+    </comp>
+    <comp lib="0" loc="(1320,650)" name="Constant">
+      <a name="facing" val="north"/>
     </comp>
     <comp lib="0" loc="(1370,450)" name="Tunnel">
       <a name="facing" val="east"/>
@@ -370,6 +366,7 @@
       <a name="value" val="0x4"/>
       <a name="width" val="32"/>
     </comp>
+    <comp lib="0" loc="(630,600)" name="Constant"/>
     <comp lib="0" loc="(670,460)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="Instruction"/>
@@ -421,7 +418,6 @@
       <a name="label" val="WB"/>
       <a name="width" val="32"/>
     </comp>
-    <comp lib="0" loc="(710,530)" name="Constant"/>
     <comp lib="0" loc="(710,550)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="clk"/>
@@ -535,8 +531,8 @@
       <a name="width" val="32"/>
     </comp>
     <comp lib="10" loc="(2320,590)" name="partial_load"/>
-    <comp lib="11" loc="(1860,750)" name="branch_comp"/>
-    <comp lib="12" loc="(820,1030)" name="control_logic"/>
+    <comp lib="11" loc="(1470,510)" name="alu"/>
+    <comp lib="12" loc="(930,450)" name="regfile"/>
     <comp lib="2" loc="(1280,450)" name="Multiplexer">
       <a name="width" val="32"/>
     </comp>
@@ -579,9 +575,9 @@
     <comp lib="5" loc="(480,100)" name="Text">
       <a name="text" val="From IMEM"/>
     </comp>
-    <comp lib="6" loc="(1470,510)" name="alu"/>
-    <comp lib="7" loc="(930,450)" name="regfile"/>
-    <comp lib="8" loc="(1120,810)" name="imm_gen"/>
+    <comp lib="6" loc="(1120,810)" name="imm_gen"/>
+    <comp lib="7" loc="(1860,750)" name="branch_comp"/>
+    <comp lib="8" loc="(820,1030)" name="control_logic"/>
     <comp lib="9" loc="(2320,430)" name="partial_store"/>
     <wire from="(1050,190)" to="(1050,220)"/>
     <wire from="(1070,210)" to="(1120,210)"/>
@@ -662,6 +658,7 @@
     <wire from="(590,70)" to="(590,180)"/>
     <wire from="(60,550)" to="(80,550)"/>
     <wire from="(670,460)" to="(680,460)"/>
+    <wire from="(670,530)" to="(710,530)"/>
     <wire from="(70,440)" to="(290,440)"/>
     <wire from="(70,440)" to="(70,530)"/>
     <wire from="(70,530)" to="(80,530)"/>
