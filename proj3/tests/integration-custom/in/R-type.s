@@ -30,3 +30,14 @@ mul t1 t1 t0
 mulh t1 t1 t0
 
 mulhu t1 t1 t0
+
+
+
+addi t0 x0 -9
+addi t1 x0 -10
+
+mul t2 t0 t1
+
+mulhu t3 t0 t2
+
+sll t0 t0 t2
