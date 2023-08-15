@@ -6,11 +6,7 @@ addi sp sp -4
 sw t0 0(sp)
 lb t1 0(sp)
 
-A:
-    beq t1 t2 B
-    j A
 
-B:
-    lh t0 0(sp)
+lh t0 0(sp)
 
 addi sp sp 4
