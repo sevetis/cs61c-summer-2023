@@ -15,20 +15,53 @@ int convolve(matrix_t *a_matrix, matrix_t *b_matrix, matrix_t **output_matrix) {
   // TODO: convolve matrix a and matrix b, and store the resulting matrix in
   // output_matrix
   if (!a_matrix || !b_matrix || !output_matrix) return -1;
-  uint32_t aLen = a_matrix->cols, bLen = b_matrix->cols;
-  if (!aLen || !bLen) return -1;
+  uint32_t aCol = a_matrix->cols, bCol = b_matrix->cols;
+  uint32_t aRow = a_matrix->rows, bRow = b_matrix->rows;
+  if (!aCol || !bCol || !aRow || !bRow) return -1;
   int32_t* A = a_matrix->data, *B = b_matrix->data;
   if (!A || !B) return -1;
-
-  for (int32_t i = 0; i < (bLen>>1); i++) {
-    int32_t temp = B[0];
-    B[0] = B[bLen - i - 1];
-    B[bLen - i - 1] = temp;
+  
+  //FLIP B
+  //horizontally flip B
+  for (uint32_t i = 0; i < bRow; i++) {
+    for (uint32_t j = 0; j < (bCol>>1); j++) {
+      int32_t temp = B[i * bCol + j];
+      B[i * bCol + j] = B[(i + 1) * bCol - j - 1];
+      B[(i + 1) * bCol - j - 1] = temp;
+    }
+  }
+  //vertically flip B
+  for (uint32_t j = 0; j < bCol; j++) {
+    for (uint32_t i = 0; i < (bRow>>1); i++) {
+      int32_t temp = B[i * bCol + j];
+      B[i * bCol + j] = B[(bRow - i - 1) * bCol + j];
+      B[(bRow - i - 1) * bCol + j] = temp;
+    }
   }
 
-  for (int32_t i = 0; i + bLen <= aLen; i++) {
-    output_matrix[0]->data[i] = dot(bLen, A + i, B);
+  //convolve
+  matrix_t* res = malloc(sizeof(matrix_t));
+  res->rows = aRow - bRow + 1;
+  res->cols = aCol - bCol + 1;
+  res->data = malloc(res->rows * res->cols * sizeof(int32_t));
+  int num = bCol * bRow;
+  int32_t* temp = malloc(num * sizeof(int32_t));
+
+  for (uint32_t i = 0, count1 = 0; i < aRow - bRow + 1; i++) {
+    for (uint32_t j = 0; j < aCol - bCol + 1; j++) {
+      
+      for (uint32_t y = i, count2 = 0; y < i + bRow; y++) {
+        for (uint32_t x = j; x < j + bCol; x++) {
+          temp[count2++] = A[y * aCol + x];
+        }
+      }
+
+      res->data[count1++] = dot(num, temp, B);
+    }
   }
+
+  free(temp);
+  *output_matrix = res;
 
   return 0;
 }
