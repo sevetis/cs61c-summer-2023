@@ -13,7 +13,7 @@ int32_t dot(uint32_t n, int32_t *vec1, int32_t *vec2) {
     temp1 = _mm256_loadu_si256((__m256i *)(vec1 + i));
     temp2 = _mm256_loadu_si256((__m256i *)(vec2 + i));
 
-    temp1 = _mm256_mul_epi32(temp1, temp2);
+    temp1 = _mm256_mullo_epi32(temp1, temp2);
     sum_vec = _mm256_add_epi32(sum_vec, temp1);
   }
   
