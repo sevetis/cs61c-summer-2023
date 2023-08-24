@@ -47,8 +47,8 @@ int convolve(matrix_t *a_matrix, matrix_t *b_matrix, matrix_t **output_matrix) {
   int num = bCol * bRow;
   int32_t* temp = malloc(num * sizeof(int32_t));
 
-  for (uint32_t i = 0, count1 = 0; i < aRow - bRow + 1; i++) {
-    for (uint32_t j = 0; j < aCol - bCol + 1; j++) {
+  for (uint32_t i = 0, count1 = 0; i < res->rows; i++) {
+    for (uint32_t j = 0; j < res->cols; j++) {
       
       for (uint32_t y = i, count2 = 0; y < i + bRow; y++) {
         for (uint32_t x = j; x < j + bCol; x++) {
