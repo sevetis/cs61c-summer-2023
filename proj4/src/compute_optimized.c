@@ -15,7 +15,7 @@ int32_t dot(uint32_t n, int32_t *vec1, int32_t *vec2) {
   
   //FLIP B
   //horizontally flip B
-  #pragma omp for 
+  #pragma omp parallel for 
   for (uint32_t i = 0; i < bRow; i++) {
     for (uint32_t j = 0; j < (bCol>>1); j++) {
       int32_t temp = B[i * bCol + j];
@@ -24,7 +24,7 @@ int32_t dot(uint32_t n, int32_t *vec1, int32_t *vec2) {
     }
   }
   //vertically flip B
-  #pragma omp for
+  #pragma omp parallel for
   for (uint32_t j = 0; j < bCol; j++) {
     for (uint32_t i = 0; i < (bRow>>1); i++) {
       int32_t temp = B[i * bCol + j];
@@ -42,7 +42,7 @@ int32_t dot(uint32_t n, int32_t *vec1, int32_t *vec2) {
   int32_t* temp = malloc(num * sizeof(int32_t));
 
   uint32_t i, j, count1 = 0;
-  #pragma omp for
+  #pragma omp parallel for
   for (i = 0; i < res->rows; i++) {
     for (j = 0; j < res->cols; j++) {
       
