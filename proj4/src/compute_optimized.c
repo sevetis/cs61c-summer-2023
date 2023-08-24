@@ -6,35 +6,61 @@
 // Computes the dot product of vec1 and vec2, both of size n
 int32_t dot(uint32_t n, int32_t *vec1, int32_t *vec2) {
   // TODO: implement dot product of vec1 and vec2, both of size n
-  int32_t result = 0;
-  __m256i sum_vec = _mm256_setzero_si256();
-  __m256i temp1, temp2;
-  for (uint32_t i = 0; i < n / 8 * 8; i += 8) {
-    temp1 = _mm256_loadu_si256((__m256i *)(vec1 + i));
-    temp2 = _mm256_loadu_si256((__m256i *)(vec2 + i));
-
-    temp1 = _mm256_mullo_epi32(temp1, temp2);
-    sum_vec = _mm256_add_epi32(sum_vec, temp1);
+   if (!a_matrix || !b_matrix || !output_matrix) return -1;
+  uint32_t aCol = a_matrix->cols, bCol = b_matrix->cols;
+  uint32_t aRow = a_matrix->rows, bRow = b_matrix->rows;
+  if (!aCol || !bCol || !aRow || !bRow) return -1;
+  int32_t* A = a_matrix->data, *B = b_matrix->data;
+  if (!A || !B) return -1;
+  
+  //FLIP B
+  //horizontally flip B
+  #pragma omp for 
+  for (uint32_t i = 0; i < bRow; i++) {
+    for (uint32_t j = 0; j < (bCol>>1); j++) {
+      int32_t temp = B[i * bCol + j];
+      B[i * bCol + j] = B[(i + 1) * bCol - j - 1];
+      B[(i + 1) * bCol - j - 1] = temp;
+    }
   }
-  
-  int32_t tmp_arr[8];
-  _mm256_store_epi32((__m256i *)tmp_arr, sum_vec);
+  //vertically flip B
+  #pragma omp for
+  for (uint32_t j = 0; j < bCol; j++) {
+    for (uint32_t i = 0; i < (bRow>>1); i++) {
+      int32_t temp = B[i * bCol + j];
+      B[i * bCol + j] = B[(bRow - i - 1) * bCol + j];
+      B[(bRow - i - 1) * bCol + j] = temp;
+    }
+  }
 
-  for (int i = 0; i < 8; i++) 
-    result += tmp_arr[i];
+  //convolve
+  matrix_t* res = malloc(sizeof(matrix_t));
+  res->rows = aRow - bRow + 1;
+  res->cols = aCol - bCol + 1;
+  res->data = malloc(res->rows * res->cols * sizeof(int32_t));
+  int num = bCol * bRow;
+  int32_t* temp = malloc(num * sizeof(int32_t));
 
-  for (uint32_t i = n / 8 * 8; i < n; i++) 
-    result += vec1[i] * vec2[i];
-  
-  return result;
-}
+  uint32_t i, j, count1 = 0;
+  #pragma omp for
+  for (i = 0; i < res->rows; i++) {
+    for (j = 0; j < res->cols; j++) {
+      
+      for (uint32_t y = i, count2 = 0; y < i + bRow; y++) {
+        for (uint32_t x = j; x < j + bCol; x++) {
+          #pragma omp critical
+          temp[count2++] = A[y * aCol + x];
+        }
+      }
+      #pragma omp critical
+      res->data[count1++] = dot(num, temp, B);
+    }
+  }
 
-// Computes the convolution of two matrices
-int convolve(matrix_t *a_matrix, matrix_t *b_matrix, matrix_t **output_matrix) {
-  // TODO: convolve matrix a and matrix b, and store the resulting matrix in
-  // output_matrix
+  free(temp);
+  *output_matrix = res;
 
-  return -1;
+  return 0;
 }
 
 // Executes a task
